@@ -1,0 +1,68 @@
+import processing.serial.*;
+
+Serial myPort;
+
+String data="";
+float angle=0;
+float distance=0;
+
+void setup(){
+
+  fullScreen();
+
+  myPort = new Serial(this,"COM7",9600);
+
+  myPort.bufferUntil('.');
+}
+
+void draw(){
+
+  background(0);
+
+  translate(width/2,height-50);
+
+  stroke(0,255,0);
+  strokeWeight(3);
+  noFill();
+
+  arc(0,0,width*1.8,width*1.8,PI,TWO_PI);
+  arc(0,0,width*1.4,width*1.4,PI,TWO_PI);
+  arc(0,0,width,width,PI,TWO_PI);
+
+  line(
+    0,
+    0,
+    width*cos(radians(angle)),
+    -width*sin(radians(angle))
+  );
+
+  stroke(255,0,0);
+
+  float d = distance*4;
+
+  line(
+    d*cos(radians(angle)),
+    -d*sin(radians(angle)),
+    width*cos(radians(angle)),
+    -width*sin(radians(angle))
+  );
+}
+
+void serialEvent(Serial myPort){
+
+  data = myPort.readStringUntil('.');
+
+  if(data != null){
+
+    data = trim(data);
+
+    int comma = data.indexOf(",");
+
+    if(comma > 0){
+
+      angle = float(data.substring(0,comma));
+
+      distance = float(data.substring(comma+1));
+    }
+  }
+}
